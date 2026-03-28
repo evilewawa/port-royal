@@ -1,0 +1,103 @@
+import type { GameState } from './types';
+
+export const MOCK_PLAYER_ID = 'player-1';
+
+export const mockGameState: GameState = {
+  gameId: 'DEMO-1234',
+  activePlayerId: 'player-1',
+  currentTurnPlayerId: 'player-1',
+  phase: 'discover',
+  deckCount: 87,
+  cardsCanTake: 1,
+  cardsTaken: 0,
+  busted: false,
+  gameOver: false,
+  log: [
+    { id: 0, text: 'Game started! Each player receives 3 coins.', kind: 'system' },
+    { id: 1, text: "--- You's turn ---", kind: 'system' },
+    { id: 2, text: 'You begins Phase 1: Discover.', kind: 'info' },
+    { id: 3, text: 'You drew Blue Flute (⚔2, 🪙3).', kind: 'action' },
+    { id: 4, text: 'You drew Red Frigate (⚔4, 🪙5).', kind: 'action' },
+    { id: 5, text: 'You drew Yellow Pinnace (⚔1, 🪙2).', kind: 'action' },
+    { id: 6, text: 'You drew Sailor (cost 2, ★1).', kind: 'action' },
+    { id: 7, text: 'You drew Admiral (cost 6, ★2).', kind: 'action' },
+    { id: 8, text: 'You stops drawing (5 card(s) in harbor).', kind: 'info' },
+    { id: 9, text: 'Expedition revealed (★3, +2 coins): requires 1x priest, 1x captain.', kind: 'action' },
+  ],
+  expeditionsOnTable: [
+    {
+      id: 'exp-1',
+      type: 'expedition',
+      influence: 3,
+      coinReward: 2,
+      requirements: { priest: 1, captain: 1 },
+    },
+  ],
+  harborDisplay: [
+    { id: 's-1', type: 'ship', color: 'blue',   coins: 3, cutlasses: 2 },
+    { id: 's-2', type: 'ship', color: 'red',    coins: 5, cutlasses: 4 },
+    { id: 's-3', type: 'ship', color: 'yellow', coins: 2, cutlasses: 1 },
+    {
+      id: 'p-1',
+      type: 'profession',
+      profession: 'sailor',
+      name: 'Sailor',
+      cost: 2,
+      influence: 1,
+    },
+    {
+      id: 'p-2',
+      type: 'profession',
+      profession: 'admiral',
+      name: 'Admiral',
+      cost: 6,
+      influence: 2,
+    },
+    {
+      id: 'p-3',
+      type: 'profession',
+      profession: 'trader',
+      name: 'Trader',
+      cost: 3,
+      influence: 1,
+      traderColor: 'blue',
+    },
+  ],
+  players: [
+    {
+      id: 'player-1',
+      name: 'You',
+      coins: 5,
+      influence: 4,
+      cutlasses: 3,
+      professions: [
+        { id: 'pp-1', type: 'profession', profession: 'sailor', name: 'Sailor', cost: 2, influence: 1 },
+        { id: 'pp-2', type: 'profession', profession: 'pirate', name: 'Pirate', cost: 4, influence: 2 },
+        { id: 'pp-3', type: 'profession', profession: 'senorita', name: 'Señorita', cost: 3, influence: 1 },
+      ],
+      expeditions: [
+        { id: 'ep-1', type: 'expedition', influence: 3, coinReward: 2, requirements: { settler: 1 } },
+      ],
+    },
+    {
+      id: 'player-2',
+      name: 'Alice',
+      coins: 8,
+      influence: 6,
+      cutlasses: 1,
+      professions: [
+        { id: 'pp-4', type: 'profession', profession: 'governor', name: 'Governor', cost: 5, influence: 2 },
+      ],
+      expeditions: [],
+    },
+    {
+      id: 'player-3',
+      name: 'Bob',
+      coins: 3,
+      influence: 2,
+      cutlasses: 0,
+      professions: [],
+      expeditions: [],
+    },
+  ],
+};

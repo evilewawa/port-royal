@@ -1,0 +1,88 @@
+.lobby {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.lobby__card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.lobby__title {
+  font-size: 28px;
+  text-align: center;
+  color: var(--accent);
+}
+
+.lobby__subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: -14px;
+}
+
+.lobby__status {
+  font-size: 12px;
+  text-align: center;
+  padding: 6px;
+  border-radius: var(--radius);
+}
+
+.lobby__status--ok {
+  background: rgba(76, 175, 130, 0.15);
+  color: var(--success);
+}
+
+.lobby__status--err {
+  background: rgba(224, 82, 82, 0.15);
+  color: var(--danger);
+}
+
+.lobby__error {
+  background: rgba(224, 82, 82, 0.15);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--danger);
+}
+
+.lobby__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lobby__form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lobby__form label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.lobby__form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.lobby__form-actions button {
+  flex: 1;
+}

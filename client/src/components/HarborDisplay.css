@@ -1,0 +1,73 @@
+.harbor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.harbor__section-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.harbor__cards-left {
+  color: var(--accent);
+  font-size: 11px;
+}
+
+.harbor__cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.harbor__card-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.harbor__repel-btn {
+  font-size: 11px;
+  padding: 2px 8px;
+  background: var(--danger);
+  border-color: var(--danger);
+  color: white;
+}
+
+.harbor__repel-btn:hover {
+  background: #ff6b6b;
+}
+
+.harbor__cant-afford {
+  font-size: 10px;
+  color: var(--danger);
+}
+
+.harbor__empty {
+  color: var(--text-muted);
+  font-style: italic;
+  text-align: center;
+  padding: 40px 0;
+}
+
+.harbor__expeditions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}

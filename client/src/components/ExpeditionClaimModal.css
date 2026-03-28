@@ -1,0 +1,132 @@
+.exp-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.exp-modal {
+  background: var(--surface);
+  border: 1px solid var(--success);
+  border-radius: 10px;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+}
+
+.exp-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.exp-modal__header h3 {
+  font-size: 16px;
+  color: var(--success);
+}
+
+.exp-modal__close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 16px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.exp-modal__reward {
+  display: flex;
+  gap: 16px;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 10px 14px;
+  background: var(--surface-alt);
+  border-radius: var(--radius);
+}
+
+.exp-modal__label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.exp-modal__req-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.exp-modal__req {
+  font-size: 13px;
+  padding: 4px 10px;
+  background: var(--surface-alt);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  color: var(--danger);
+}
+
+.exp-modal__req--met {
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.exp-modal__none {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.exp-modal__prof-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.exp-modal__prof-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-align: left;
+  transition: border-color 0.1s;
+}
+
+.exp-modal__prof-btn:hover {
+  border-color: var(--text-muted);
+}
+
+.exp-modal__prof-btn--selected {
+  border-color: var(--accent);
+  background: rgba(240, 165, 0, 0.1);
+}
+
+.exp-modal__prof-name {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.exp-modal__prof-note {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.exp-modal__actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}

@@ -1,0 +1,65 @@
+.game-log {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.game-log__title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.game-log__entries {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.game-log__entry {
+  padding: 3px 12px;
+  font-size: 12px;
+  line-height: 1.45;
+  border-left: 2px solid transparent;
+}
+
+.game-log__entry--system {
+  color: var(--text-muted);
+  font-style: italic;
+  border-left-color: var(--border);
+}
+
+.game-log__entry--info {
+  color: var(--text);
+  border-left-color: var(--border);
+}
+
+.game-log__entry--action {
+  color: #c8d8ff;
+  border-left-color: #4a6aee;
+}
+
+.game-log__entry--bust {
+  color: var(--danger);
+  font-weight: 600;
+  border-left-color: var(--danger);
+  background: rgba(224, 82, 82, 0.06);
+}
+
+.game-log__entry--warn {
+  color: var(--accent);
+  border-left-color: var(--accent);
+}
