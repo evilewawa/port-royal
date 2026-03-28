@@ -6,6 +6,7 @@ import { GameRoom } from './game/GameRoom';
 import type { ClientAction } from './types';
 
 const app = express();
+app.get('/health', (_req, res) => res.send('ok'));
 const httpServer = createServer(app);
 
 const ALLOWED_ORIGIN = process.env.CLIENT_ORIGIN ?? 'http://localhost:5173';
@@ -106,7 +107,7 @@ io.on('connection', socket => {
   });
 });
 
-const PORT = process.env.PORT ?? 3001;
-httpServer.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+const PORT = parseInt(process.env.PORT ?? '3001', 10);
+httpServer.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on 0.0.0.0:${PORT}`);
 });
