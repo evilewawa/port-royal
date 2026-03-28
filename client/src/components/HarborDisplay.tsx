@@ -59,7 +59,8 @@ export default function HarborDisplay({
   function canAfford(card: Card) {
     if (card.type === 'profession') {
       const señoritaCount = localPlayer.professions.filter(p => p.profession === 'senorita').length;
-      const cost = Math.max(0, card.cost - señoritaCount);
+      const tributeCost = isMyTurn ? 0 : 1;
+      const cost = Math.max(0, card.cost - señoritaCount) + tributeCost;
       return localPlayer.coins >= cost;
     }
     return true;
