@@ -1,0 +1,109 @@
+.card-editor {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.card-editor__toggle {
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  background: var(--surface-alt);
+  border: none;
+  border-radius: 0;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.card-editor__toggle:hover {
+  background: var(--border);
+  color: var(--text);
+}
+
+.card-editor__body {
+  padding: 14px;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.card-editor__globals {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.card-editor__globals label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.card-editor__globals input {
+  width: 60px;
+}
+
+.card-editor__table-wrap {
+  overflow-x: auto;
+}
+
+.card-editor__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.card-editor__table th {
+  text-align: left;
+  padding: 6px 8px;
+  background: var(--surface-alt);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.card-editor__table td {
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.card-editor__table tr:last-child td {
+  border-bottom: none;
+}
+
+.card-editor__table input {
+  width: 56px;
+  padding: 4px 6px;
+  font-size: 13px;
+}
+
+.card-editor__name {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.card-editor__note {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: normal;
+}
+
+.card-editor__row--changed td {
+  background: rgba(240, 165, 0, 0.06);
+}
+
+.card-editor__row--changed .card-editor__name {
+  color: var(--accent);
+}

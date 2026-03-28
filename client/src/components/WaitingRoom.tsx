@@ -1,15 +1,28 @@
-import type { GameState } from '../types';
+import { useState } from 'react';
+import type { GameState, GameConfig } from '../types';
+import { DEFAULT_PROFESSION_CONFIG } from '../types';
+import CardEditor from './CardEditor';
 import './WaitingRoom.css';
 
 interface Props {
   gameState: GameState;
   playerId: string;
-  onStart: () => void;
+  onStart: (config?: Partial<GameConfig>) => void;
+}
+
+function defaultConfig(): GameConfig {
+  return {
+    startingCoins: 3,
+    winInfluence: 12,
+    professions: { ...DEFAULT_PROFESSION_CONFIG },
+    expeditions: [],
+  };
 }
 
 export default function WaitingRoom({ gameState, playerId, onStart }: Props) {
   const isHost = gameState.players[0]?.id === playerId;
   const canStart = gameState.players.length >= 2;
+  const [config, setConfig] = useState<GameConfig>(defaultConfig);
 
   return (
     <div className="waiting-room">
@@ -34,8 +47,12 @@ export default function WaitingRoom({ gameState, playerId, onStart }: Props) {
           ))}
         </div>
 
+        {isHost && (
+          <CardEditor config={config} onChange={setConfig} />
+        )}
+
         {isHost ? (
-          <button className="primary" onClick={onStart} disabled={!canStart}>
+          <button className="primary" onClick={() => onStart(config)} disabled={!canStart}>
             {canStart ? 'Start Game' : 'Need at least 2 players'}
           </button>
         ) : (

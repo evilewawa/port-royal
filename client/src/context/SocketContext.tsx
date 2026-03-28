@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-import type { GameState, ClientAction } from '../types';
+import type { GameState, ClientAction, GameConfig } from '../types';
 import { mockGameState, MOCK_PLAYER_ID } from '../mockState';
 
 interface SocketContextValue {
@@ -11,7 +11,7 @@ interface SocketContextValue {
   error: string | null;
   createGame: (playerName: string) => void;
   joinGame: (gameId: string, playerName: string) => void;
-  startGame: () => void;
+  startGame: (config?: Partial<GameConfig>) => void;
   sendAction: (action: ClientAction) => void;
   loadMock: () => void;
 }
@@ -62,8 +62,8 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     socketRef.current?.emit('game:join', { gameId, playerName });
   };
 
-  const startGame = () => {
-    socketRef.current?.emit('game:start');
+  const startGame = (config?: Partial<GameConfig>) => {
+    socketRef.current?.emit('game:start', config);
   };
 
   const sendAction = (action: ClientAction) => {

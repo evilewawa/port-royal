@@ -59,13 +59,13 @@ io.on('connection', socket => {
   });
 
   // ── Start game ─────────────────────────────────────────────────────────────
-  socket.on('game:start', () => {
+  socket.on('game:start', (config?: object) => {
     try {
       const gameId = socketToGame.get(socket.id);
       if (!gameId) throw new Error('Not in a game');
       const room = rooms.get(gameId);
       if (!room) throw new Error('Game not found');
-      room.startGame();
+      room.startGame(config as any);
       console.log(`[game] Game ${gameId} started`);
       broadcastRoom(room);
     } catch (err: any) {

@@ -20,7 +20,7 @@ export default function GameBoard() {
   if (!localPlayer) return <div className="loading">Connecting…</div>;
 
   if (gameState.phase === 'waiting') {
-    return <WaitingRoom gameState={gameState} playerId={playerId!} onStart={startGame} />;
+    return <WaitingRoom gameState={gameState} playerId={playerId!} onStart={config => startGame(config)} />;
   }
 
   const isActivePlayer = gameState.activePlayerId === playerId;

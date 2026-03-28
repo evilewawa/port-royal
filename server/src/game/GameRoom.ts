@@ -1,4 +1,6 @@
 import { buildDeck, shuffle } from './cards';
+import { DEFAULT_CONFIG, mergeConfig } from './cardConfig';
+import type { GameConfig } from './cardConfig';
 import type {
   Card, ShipCard, ProfessionCard, ExpeditionCard,
   ServerPlayer, ClientPlayer, ClientGameState, ClientAction, LogEntry,
@@ -34,6 +36,7 @@ export class GameRoom {
   private gamblerUsedThisTurn = false;
   private gameOver = false;
   private winnerId?: string;
+  private config: GameConfig = DEFAULT_CONFIG;
 
   private logEntries: LogEntry[] = [];
   private logCounter = 0;
@@ -77,11 +80,12 @@ export class GameRoom {
 
   // ── Game Start ─────────────────────────────────────────────────────────────
 
-  startGame(): void {
+  startGame(configOverrides?: Partial<GameConfig>): void {
     if (!this.canStart()) throw new Error('Cannot start game');
     this.started = true;
-    this.deck = buildDeck(this.players.length);
-    for (const p of this.players) p.coins = 3;
+    this.config = mergeConfig(configOverrides ?? {});
+    this.deck = buildDeck(this.players.length, this.config);
+    for (const p of this.players) p.coins = this.config.startingCoins;
     this.log('Game started! Each player receives 3 coins.', 'system');
     this.activePlayerIndex = 0;
     this.beginDiscoverPhase();
@@ -165,7 +169,7 @@ export class GameRoom {
     if (discarded > 0) this.log(`${discarded} card(s) discarded from the harbor.`, 'info');
 
     for (const p of this.players) {
-      if (this.computeInfluence(p) >= 12) {
+      if (this.computeInfluence(p) >= this.config.winInfluence) {
         this.log(`${p.name} has reached 12 influence — triggering end game!`, 'warn');
         this.triggerEndGame();
         return;
