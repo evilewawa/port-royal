@@ -57,11 +57,14 @@ export default function HarborDisplay({
   }
 
   function canAfford(card: Card) {
+    const tributeCost = gameState.phase === 'other_players_turn' ? 1 : 0;
     if (card.type === 'profession') {
       const señoritaCount = localPlayer.professions.filter(p => p.profession === 'senorita').length;
-      const tributeCost = isMyTurn ? 0 : 1;
       const cost = Math.max(0, card.cost - señoritaCount) + tributeCost;
       return localPlayer.coins >= cost;
+    }
+    if (card.type === 'ship') {
+      return localPlayer.coins >= tributeCost;
     }
     return true;
   }
@@ -110,7 +113,8 @@ export default function HarborDisplay({
               canRepel &&
               card.type === 'ship' &&
               !card.cannotBeRepelled &&
-              localPlayer.cutlasses >= card.cutlasses;
+              localPlayer.cutlasses >= card.cutlasses &&
+              card.id === gameState.lastDrawnShipId;
 
             return (
               <div key={card.id} className="harbor__card-wrapper">

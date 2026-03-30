@@ -2,6 +2,7 @@ import { useSocket } from '../context/SocketContext';
 import WaitingRoom from '../components/WaitingRoom';
 import GameLog from '../components/GameLog';
 import CardInfoModal from '../components/CardInfoModal';
+import NumberGuessPhase from '../components/NumberGuessPhase';
 import { useState } from 'react';
 import HarborDisplay from '../components/HarborDisplay';
 import PlayerDisplay from '../components/PlayerDisplay';
@@ -21,6 +22,16 @@ export default function GameBoard() {
 
   if (gameState.phase === 'waiting') {
     return <WaitingRoom gameState={gameState} playerId={playerId!} onStart={config => startGame(config)} />;
+  }
+
+  if (gameState.phase === 'number_guess') {
+    return (
+      <NumberGuessPhase
+        gameState={gameState}
+        localPlayer={localPlayer}
+        onGuess={value => sendAction({ type: 'GUESS_NUMBER', value })}
+      />
+    );
   }
 
   const isActivePlayer = gameState.activePlayerId === playerId;
@@ -55,6 +66,8 @@ export default function GameBoard() {
             key={p.id}
             player={p}
             isLocal={false}
+            isActive={p.id === gameState.activePlayerId}
+            isCurrentTurn={p.id === gameState.currentTurnPlayerId}
           />
         ))}
       </div>
@@ -95,7 +108,12 @@ export default function GameBoard() {
       </div>
 
       <div className="game-board__bottom">
-        <PlayerDisplay player={localPlayer} isLocal />
+        <PlayerDisplay
+          player={localPlayer}
+          isLocal
+          isActive={isActivePlayer}
+          isCurrentTurn={isMyTurn}
+        />
       </div>
 
       {showCardInfo && <CardInfoModal onClose={() => setShowCardInfo(false)} />}

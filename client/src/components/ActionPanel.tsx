@@ -29,8 +29,13 @@ export default function ActionPanel({
 
   const hasGambler = localPlayer.professions.some(p => p.profession === 'gambler');
 
+  const showYourTurnBanner = isMyTurn || (isActivePlayer && phase === 'discover');
+
   return (
-    <div className="action-panel">
+    <div className={`action-panel ${showYourTurnBanner ? 'action-panel--your-turn' : ''}`}>
+      {showYourTurnBanner && (
+        <div className="action-panel__your-turn-banner">YOUR TURN</div>
+      )}
       <div className="action-panel__status">
         {busted ? (
           <span className="action-panel__status--bust">BUSTED!</span>
@@ -115,5 +120,6 @@ function phaseLabel(phase: GameState['phase']) {
     case 'discover': return 'Phase 1: Discover';
     case 'trade_hire': return 'Phase 2: Trade & Hire';
     case 'other_players_turn': return 'Other Players\' Turn';
+    default: return '';
   }
 }

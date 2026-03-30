@@ -17,6 +17,21 @@ const SHIP_COLOR_NAMES: Record<ShipColor, string> = {
   black: 'Galleon',
 };
 
+const PROFESSION_DESCRIPTIONS: Record<string, string> = {
+  sailor: '+1 cutlass for repelling ships.',
+  pirate: '+2 cutlasses for repelling ships.',
+  trader: '+1 coin when trading a matching-color ship.',
+  senorita: 'Reduces your hiring cost by 1 coin.',
+  jester: 'Earn 1 coin whenever anyone busts, or when you stop on an empty harbor.',
+  priest: 'Can be sacrificed to fulfill Expedition requirements.',
+  settler: 'Can be sacrificed to fulfill Expedition requirements.',
+  captain: 'Can be sacrificed to fulfill Expedition requirements.',
+  jack: 'Jack of all Trades: counts as any profession for Expeditions.',
+  admiral: 'If harbor has 5+ cards when you stop, gain 2 coins.',
+  governor: 'Take 1 extra card from the harbor on your turn.',
+  gambler: 'Draw 4 cards at once; if no bust, gain +1 extra take.',
+};
+
 export default function CardView({ card, onClick, selected, actionLabel, disabled }: Props) {
   const handleClick = !disabled && onClick ? onClick : undefined;
 
@@ -25,7 +40,7 @@ export default function CardView({ card, onClick, selected, actionLabel, disable
       <div
         className={`card card--ship card--${card.color} ${selected ? 'card--selected' : ''} ${onClick && !disabled ? 'card--clickable' : ''}`}
         onClick={handleClick}
-        title={actionLabel}
+        title={`${SHIP_COLOR_NAMES[card.color]}: earn ${card.coins} coin(s) when traded, requires ${card.cutlasses} cutlass(es) to repel`}
       >
         <div className="card__header">{SHIP_COLOR_NAMES[card.color]}</div>
         <div className="card__body">
@@ -49,7 +64,7 @@ export default function CardView({ card, onClick, selected, actionLabel, disable
       <div
         className={`card card--profession ${selected ? 'card--selected' : ''} ${onClick && !disabled ? 'card--clickable' : ''}`}
         onClick={handleClick}
-        title={actionLabel}
+        title={PROFESSION_DESCRIPTIONS[card.profession] ?? card.name}
       >
         <div className="card__header">{card.name}</div>
         <div className="card__body">
@@ -63,9 +78,10 @@ export default function CardView({ card, onClick, selected, actionLabel, disable
           </div>
         </div>
         {card.traderColor && (
-          <div className={`card__badge card__badge--trader card__badge--${card.traderColor}`}>
-            {SHIP_COLOR_NAMES[card.traderColor]}
-          </div>
+          <div
+            className={`card__badge card__badge--trader card__badge--${card.traderColor}`}
+            title={`+1 coin trading ${SHIP_COLOR_NAMES[card.traderColor]}`}
+          />
         )}
         {actionLabel && <div className="card__action-label">{actionLabel}</div>}
       </div>
@@ -81,7 +97,7 @@ export default function CardView({ card, onClick, selected, actionLabel, disable
       <div
         className={`card card--expedition ${selected ? 'card--selected' : ''} ${onClick && !disabled ? 'card--clickable' : ''}`}
         onClick={handleClick}
-        title={actionLabel}
+        title={`Expedition: sacrifice ${reqs || 'no professions'} to earn +${card.coinReward} coin(s) and ${card.influence} influence`}
       >
         <div className="card__header">Expedition</div>
         <div className="card__body">

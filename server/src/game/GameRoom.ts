@@ -3,7 +3,7 @@ import { DEFAULT_CONFIG, mergeConfig } from './cardConfig';
 import type { GameConfig } from './cardConfig';
 import type {
   Card, ShipCard, ProfessionCard, ExpeditionCard,
-  ServerPlayer, ClientPlayer, ClientGameState, ClientAction, LogEntry,
+  ServerPlayer, ClientPlayer, ClientGameState, ClientAction, LogEntry, NumberGuessState,
 } from '../types';
 
 const SHIP_NAME: Record<string, string> = {
@@ -26,7 +26,7 @@ export class GameRoom {
   private expeditionsOnTable: ExpeditionCard[] = [];
 
   private activePlayerIndex = 0;
-  private phase: 'waiting' | 'discover' | 'trade_hire' | 'other_players_turn' = 'waiting';
+  private phase: 'waiting' | 'number_guess' | 'discover' | 'trade_hire' | 'other_players_turn' = 'waiting';
   private busted = false;
   private cardsCanTake = 1;
   private cardsTaken = 0;
@@ -37,6 +37,9 @@ export class GameRoom {
   private gameOver = false;
   private winnerId?: string;
   private config: GameConfig = DEFAULT_CONFIG;
+  private lastDrawnShipId: string | null = null;
+  private numberGuessTarget = 0;
+  private numberGuesses: Record<string, number> = {};
 
   private logEntries: LogEntry[] = [];
   private logCounter = 0;
@@ -84,6 +87,24 @@ export class GameRoom {
     if (!this.canStart()) throw new Error('Cannot start game');
     this.started = true;
     this.config = mergeConfig(configOverrides ?? {});
+    this.phase = 'number_guess';
+    this.numberGuessTarget = Math.floor(Math.random() * 10) + 1;
+    this.numberGuesses = {};
+    this.log('Before the game starts, each player must guess a number 1–10. Closest to the secret number goes first! Ties are broken alphabetically.', 'system');
+  }
+
+  private resolveNumberGuess(): void {
+    const target = this.numberGuessTarget;
+    const ranked = [...this.players]
+      .map(p => ({ p, diff: Math.abs(this.numberGuesses[p.id] - target) }))
+      .sort((a, b) => a.diff !== b.diff ? a.diff - b.diff : a.p.name.localeCompare(b.p.name));
+
+    const summary = ranked.map(r => `${r.p.name}: ${this.numberGuesses[r.p.id]}`).join(', ');
+    this.log(`Secret number was ${target}! Guesses: ${summary}. ${ranked[0].p.name} goes first!`, 'system');
+
+    this.players = ranked.map(r => r.p);
+    this.playerOrder = this.players.map(p => p.id);
+
     this.deck = buildDeck(this.players.length, this.config);
     for (const p of this.players) p.coins = this.config.startingCoins;
     this.log('Game started! Each player receives 3 coins.', 'system');
@@ -97,6 +118,7 @@ export class GameRoom {
     this.phase = 'discover';
     this.busted = false;
     this.harborDisplay = [];
+    this.lastDrawnShipId = null;
     this.gamblerUsedThisTurn = false;
     this.currentTurnPlayerId = this.activePlayer.id;
     this.log(`--- ${this.activePlayer.name}'s turn ---`, 'system');
@@ -137,6 +159,10 @@ export class GameRoom {
   }
 
   private beginOtherPlayersTurn(): void {
+    if (this.harborDisplay.length === 0) {
+      this.endTurn();
+      return;
+    }
     this.phase = 'other_players_turn';
     const idx = this.activePlayerIndex;
     const queue: string[] = [];
@@ -197,6 +223,7 @@ export class GameRoom {
   handleAction(socketId: string, action: ClientAction): void {
     if (this.gameOver) throw new Error('Game is over');
     switch (action.type) {
+      case 'GUESS_NUMBER':     return this.actionGuessNumber(socketId, action.value);
       case 'DRAW_CARD':        return this.actionDraw(socketId);
       case 'STOP_DRAWING':     return this.actionStop(socketId);
       case 'REPEL_SHIP':       return this.actionRepel(socketId, action.cardId);
@@ -206,6 +233,21 @@ export class GameRoom {
       case 'PASS_TURN':        return this.actionPass(socketId);
       case 'USE_GAMBLER':      return this.actionGambler(socketId);
       default: throw new Error('Unknown action');
+    }
+  }
+
+  private actionGuessNumber(socketId: string, value: number): void {
+    if (this.phase !== 'number_guess') throw new Error('Not in number guess phase');
+    if (!this.hasPlayer(socketId)) throw new Error('Player not found');
+    if (this.numberGuesses[socketId] !== undefined) throw new Error('Already guessed');
+    if (value < 1 || value > 10) throw new Error('Guess must be between 1 and 10');
+
+    this.numberGuesses[socketId] = value;
+    const player = this.getPlayer(socketId);
+    this.log(`${player.name} has submitted their guess.`, 'info');
+
+    if (Object.keys(this.numberGuesses).length === this.players.length) {
+      this.resolveNumberGuess();
     }
   }
 
@@ -242,6 +284,7 @@ export class GameRoom {
         this.log(`${this.activePlayer.name} drew a duplicate ${SHIP_NAME[card.color]} — BUST! Harbor cleared.`, 'bust');
         this.discard.push(...this.harborDisplay);
         this.harborDisplay = [];
+        this.lastDrawnShipId = null;
         this.busted = true;
         for (const p of this.players) {
           const jesters = p.professions.filter(pr => pr.profession === 'jester').length;
@@ -252,10 +295,12 @@ export class GameRoom {
         }
         return;
       }
+      this.lastDrawnShipId = card.id;
       this.log(`${this.activePlayer.name} drew ${SHIP_NAME[card.color]} (⚔${card.cutlasses}, 🪙${card.coins}).`, 'action');
     }
 
     if (card.type === 'profession') {
+      this.lastDrawnShipId = null;
       this.log(`${this.activePlayer.name} drew ${card.name} (cost ${card.cost}, ★${card.influence}).`, 'action');
     }
 
@@ -283,6 +328,7 @@ export class GameRoom {
 
     this.harborDisplay = this.harborDisplay.filter(c => c.id !== cardId);
     this.discard.push(card);
+    this.lastDrawnShipId = null;
     this.log(`${this.activePlayer.name} repels the ${SHIP_NAME[card.color]} (used ${cutlasses}⚔).`, 'action');
   }
 
@@ -592,6 +638,15 @@ export class GameRoom {
   // ── State Serialization ────────────────────────────────────────────────────
 
   toClientState(): ClientGameState {
+    const allGuessed = Object.keys(this.numberGuesses).length === this.players.length;
+    const numberGuess: ClientGameState['numberGuess'] = this.phase === 'number_guess' ? {
+      guessedPlayerIds: Object.keys(this.numberGuesses),
+      targetNumber: allGuessed ? this.numberGuessTarget : undefined,
+      results: allGuessed
+        ? this.players.map(p => ({ id: p.id, name: p.name, guess: this.numberGuesses[p.id] }))
+        : undefined,
+    } : undefined;
+
     return {
       gameId: this.id,
       players: this.players.map(p => this.serializePlayer(p)),
@@ -607,6 +662,8 @@ export class GameRoom {
       gameOver: this.gameOver,
       winnerId: this.winnerId,
       log: this.logEntries,
+      lastDrawnShipId: this.lastDrawnShipId ?? undefined,
+      numberGuess,
     };
   }
 

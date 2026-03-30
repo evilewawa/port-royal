@@ -10,6 +10,35 @@
   border-color: var(--accent);
 }
 
+.player-display--active {
+  border-color: var(--success);
+  box-shadow: 0 0 0 2px rgba(72, 199, 142, 0.3);
+}
+
+.player-display--current-turn {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(240, 165, 0, 0.4);
+  animation: pulse-turn 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-turn {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(240, 165, 0, 0.4); }
+  50%       { box-shadow: 0 0 0 6px rgba(240, 165, 0, 0.15); }
+}
+
+.player-display__turn-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--accent);
+  color: #1a1f2e;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  vertical-align: middle;
+}
+
 .player-display__header {
   display: flex;
   align-items: center;

@@ -63,12 +63,18 @@ export interface Player {
   expeditions: ExpeditionCard[];
 }
 
-export type GamePhase = 'waiting' | 'discover' | 'trade_hire' | 'other_players_turn';
+export type GamePhase = 'waiting' | 'number_guess' | 'discover' | 'trade_hire' | 'other_players_turn';
 
 export interface LogEntry {
   id: number;
   text: string;
   kind: 'info' | 'action' | 'bust' | 'warn' | 'system';
+}
+
+export interface NumberGuessState {
+  guessedPlayerIds: string[];
+  targetNumber?: number;
+  results?: Array<{ id: string; name: string; guess: number }>;
 }
 
 export interface GameState {
@@ -86,6 +92,8 @@ export interface GameState {
   gameOver: boolean;
   winnerId?: string;
   log: LogEntry[];
+  lastDrawnShipId?: string;
+  numberGuess?: NumberGuessState;
 }
 
 export interface ProfessionConfig {
@@ -132,4 +140,5 @@ export type ClientAction =
   | { type: 'HIRE_PROFESSION'; cardId: string }
   | { type: 'CLAIM_EXPEDITION'; expeditionId: string; sacrificeIds: string[] }
   | { type: 'PASS_TURN' }
-  | { type: 'USE_GAMBLER' };
+  | { type: 'USE_GAMBLER' }
+  | { type: 'GUESS_NUMBER'; value: number };
