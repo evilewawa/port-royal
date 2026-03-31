@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import type { ReactNode } from 'react';
 import type { LogEntry } from '../types';
 import './GameLog.css';
 
@@ -27,9 +28,9 @@ export default function GameLog({ entries, players }: Props) {
   function renderText(text: string) {
     if (!players || players.length === 0) return text;
     // Color player names in log text
-    const parts: Array<string | JSX.Element> = [text];
+    const parts: Array<string | ReactNode> = [text];
     for (const p of players) {
-      const next: Array<string | JSX.Element> = [];
+      const next: Array<string | ReactNode> = [];
       for (const part of parts) {
         if (typeof part !== 'string') { next.push(part); continue; }
         const segments = part.split(p.name);

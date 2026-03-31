@@ -70,6 +70,7 @@ export const mockGameState: GameState = {
       coins: 5,
       influence: 4,
       cutlasses: 3,
+      color: '#ff9a5c',
       professions: [
         { id: 'pp-1', type: 'profession', profession: 'sailor', name: 'Sailor', cost: 2, influence: 1 },
         { id: 'pp-2', type: 'profession', profession: 'pirate', name: 'Pirate', cost: 4, influence: 2 },
@@ -85,6 +86,7 @@ export const mockGameState: GameState = {
       coins: 8,
       influence: 6,
       cutlasses: 1,
+      color: '#5cb8ff',
       professions: [
         { id: 'pp-4', type: 'profession', profession: 'governor', name: 'Governor', cost: 5, influence: 2 },
       ],
@@ -96,6 +98,7 @@ export const mockGameState: GameState = {
       coins: 3,
       influence: 2,
       cutlasses: 0,
+      color: '#a8ff78',
       professions: [],
       expeditions: [],
     },
