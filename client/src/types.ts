@@ -12,7 +12,8 @@ export type ProfessionType =
   | 'jester'
   | 'admiral'
   | 'governor'
-  | 'gambler';
+  | 'gambler'
+  | 'cannoneer';
 
 export interface ShipCard {
   id: string;
@@ -61,6 +62,7 @@ export interface Player {
   cutlasses: number;
   professions: ProfessionCard[];
   expeditions: ExpeditionCard[];
+  color: string;
 }
 
 export type GamePhase = 'waiting' | 'number_guess' | 'discover' | 'trade_hire' | 'other_players_turn';
@@ -118,18 +120,19 @@ export interface GameConfig {
 }
 
 export const DEFAULT_PROFESSION_CONFIG: Record<string, ProfessionConfig> = {
-  sailor:   { name: 'Sailor',             cost: 2, influence: 1, count: 10 },
-  pirate:   { name: 'Pirate',             cost: 4, influence: 2, count: 3  },
-  trader:   { name: 'Trader',             cost: 3, influence: 1, count: 2  },
-  senorita: { name: 'Señorita',           cost: 3, influence: 1, count: 4  },
-  jester:   { name: 'Jester',             cost: 3, influence: 1, count: 5  },
-  priest:   { name: 'Priest',             cost: 3, influence: 1, count: 5  },
-  settler:  { name: 'Settler',            cost: 3, influence: 1, count: 5  },
-  jack:     { name: 'Jack of all Trades', cost: 5, influence: 2, count: 3  },
-  captain:  { name: 'Captain',            cost: 5, influence: 2, count: 5  },
-  admiral:  { name: 'Admiral',            cost: 6, influence: 2, count: 6  },
-  governor: { name: 'Governor',           cost: 6, influence: 2, count: 4  },
-  gambler:  { name: 'Gambler',            cost: 4, influence: 2, count: 4  },
+  sailor:    { name: 'Sailor',             cost: 2, influence: 1, count: 10 },
+  pirate:    { name: 'Pirate',             cost: 4, influence: 2, count: 3  },
+  trader:    { name: 'Trader',             cost: 3, influence: 1, count: 1  }, // per color
+  senorita:  { name: 'Señorita',           cost: 3, influence: 1, count: 4  },
+  jester:    { name: 'Jester',             cost: 3, influence: 1, count: 5  },
+  priest:    { name: 'Priest',             cost: 3, influence: 1, count: 5  },
+  settler:   { name: 'Settler',            cost: 3, influence: 1, count: 5  },
+  jack:      { name: 'Jack of all Trades', cost: 5, influence: 2, count: 2  },
+  captain:   { name: 'Captain',            cost: 5, influence: 2, count: 5  },
+  admiral:   { name: 'Admiral',            cost: 7, influence: 2, count: 4  },
+  governor:  { name: 'Governor',           cost: 8, influence: 2, count: 4  },
+  gambler:   { name: 'Gambler',            cost: 4, influence: 2, count: 4  },
+  cannoneer: { name: 'Cannoneer',          cost: 5, influence: 2, count: 3  },
 };
 
 export type ClientAction =

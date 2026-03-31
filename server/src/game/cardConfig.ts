@@ -32,16 +32,17 @@ export const DEFAULT_CONFIG: GameConfig = {
   professions: {
     sailor:   { name: 'Sailor',             cost: 2, influence: 1, count: 10 },
     pirate:   { name: 'Pirate',             cost: 4, influence: 2, count: 3  },
-    trader:   { name: 'Trader',             cost: 3, influence: 1, count: 2  }, // per color
+    trader:   { name: 'Trader',             cost: 3, influence: 1, count: 1  }, // per color
     senorita: { name: 'Señorita',           cost: 3, influence: 1, count: 4  },
     jester:   { name: 'Jester',             cost: 3, influence: 1, count: 5  },
     priest:   { name: 'Priest',             cost: 3, influence: 1, count: 5  },
     settler:  { name: 'Settler',            cost: 3, influence: 1, count: 5  },
-    jack:     { name: 'Jack of all Trades', cost: 5, influence: 2, count: 3  },
+    jack:     { name: 'Jack of all Trades', cost: 5, influence: 2, count: 2  },
     captain:  { name: 'Captain',            cost: 5, influence: 2, count: 5  },
-    admiral:  { name: 'Admiral',            cost: 6, influence: 2, count: 6  },
-    governor: { name: 'Governor',           cost: 6, influence: 2, count: 4  },
-    gambler:  { name: 'Gambler',            cost: 4, influence: 2, count: 4  },
+    admiral:  { name: 'Admiral',            cost: 7, influence: 2, count: 4  },
+    governor: { name: 'Governor',           cost: 8, influence: 2, count: 4  },
+    gambler:   { name: 'Gambler',            cost: 4, influence: 2, count: 4  },
+    cannoneer: { name: 'Cannoneer',          cost: 5, influence: 2, count: 3  },
   } as Record<ProfessionType, ProfessionConfig>,
 
   expeditions: [
@@ -61,6 +62,6 @@ export function mergeConfig(overrides: Partial<GameConfig>): GameConfig {
     professions: overrides.professions
       ? { ...DEFAULT_CONFIG.professions, ...overrides.professions }
       : DEFAULT_CONFIG.professions,
-    expeditions: overrides.expeditions ?? DEFAULT_CONFIG.expeditions,
+    expeditions: (overrides.expeditions && overrides.expeditions.length > 0) ? overrides.expeditions : DEFAULT_CONFIG.expeditions,
   };
 }

@@ -1,21 +1,35 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSocket } from '../context/SocketContext';
 import './Lobby.css';
 
 export default function Lobby() {
   const { connected, error, createGame, joinGame, loadMock } = useSocket();
-  const [playerName, setPlayerName] = useState('');
+  const [playerName, setPlayerName] = useState(() => localStorage.getItem('pr-name') ?? '');
   const [joinId, setJoinId] = useState('');
   const [mode, setMode] = useState<'choose' | 'create' | 'join'>('choose');
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const gid = params.get('game');
+    if (gid) { setMode('join'); setJoinId(gid); }
+  }, []);
+
   function handleCreate(e: React.FormEvent) {
     e.preventDefault();
-    if (playerName.trim()) createGame(playerName.trim());
+    if (playerName.trim()) {
+      localStorage.setItem('pr-name', playerName.trim());
+      localStorage.removeItem('pr-game');
+      createGame(playerName.trim());
+    }
   }
 
   function handleJoin(e: React.FormEvent) {
     e.preventDefault();
-    if (playerName.trim() && joinId.trim()) joinGame(joinId.trim(), playerName.trim());
+    if (playerName.trim() && joinId.trim()) {
+      localStorage.setItem('pr-name', playerName.trim());
+      localStorage.setItem('pr-game', joinId.trim().toUpperCase());
+      joinGame(joinId.trim(), playerName.trim());
+    }
   }
 
   return (

@@ -30,6 +30,7 @@ const PROFESSION_DESCRIPTIONS: Record<string, string> = {
   admiral: 'If harbor has 5+ cards when you stop, gain 2 coins.',
   governor: 'Take 1 extra card from the harbor on your turn.',
   gambler: 'Draw 4 cards at once; if no bust, gain +1 extra take.',
+  cannoneer: '+3 cutlasses for repelling ships.',
 };
 
 export default function CardView({ card, onClick, selected, actionLabel, disabled }: Props) {

@@ -4,6 +4,7 @@ import { DEFAULT_PROFESSION_CONFIG } from '../types';
 import CardEditor from './CardEditor';
 import './WaitingRoom.css';
 
+
 interface Props {
   gameState: GameState;
   playerId: string;
@@ -23,6 +24,15 @@ export default function WaitingRoom({ gameState, playerId, onStart }: Props) {
   const isHost = gameState.players[0]?.id === playerId;
   const canStart = gameState.players.length >= 2;
   const [config, setConfig] = useState<GameConfig>(defaultConfig);
+  const [copied, setCopied] = useState(false);
+
+  function copyLink() {
+    const url = `${window.location.origin}${window.location.pathname}?game=${gameState.gameId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
 
   return (
     <div className="waiting-room">
@@ -31,6 +41,9 @@ export default function WaitingRoom({ gameState, playerId, onStart }: Props) {
         <div className="waiting-room__game-id">
           Game ID: <strong>{gameState.gameId}</strong>
           <span className="waiting-room__hint">Share this with friends</span>
+          <button className="waiting-room__copy-btn" onClick={copyLink}>
+            {copied ? '✓ Copied!' : 'Copy Link'}
+          </button>
         </div>
 
         <div className="waiting-room__players">

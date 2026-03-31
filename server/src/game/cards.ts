@@ -67,6 +67,7 @@ export function buildDeck(playerCount: number, config: GameConfig): Card[] {
     ...profs('jester'),
     ...profs('admiral'),
     ...profs('governor'),
+    ...profs('cannoneer'),
 
     // ── Expeditions ──────────────────────────────────────────────────────────
     ...config.expeditions

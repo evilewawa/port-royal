@@ -6,6 +6,8 @@ import type {
   ServerPlayer, ClientPlayer, ClientGameState, ClientAction, LogEntry, NumberGuessState,
 } from '../types';
 
+const PLAYER_COLORS = ['#ff9a5c', '#5cb8ff', '#a8ff78', '#ff5ca8', '#c85cff'];
+
 const SHIP_NAME: Record<string, string> = {
   yellow: 'Yellow Pinnace',
   blue: 'Blue Flute',
@@ -44,8 +46,28 @@ export class GameRoom {
   private logEntries: LogEntry[] = [];
   private logCounter = 0;
 
+  private broadcastFn: (() => void) | null = null;
+  private turnTimer: ReturnType<typeof setTimeout> | null = null;
+
   constructor(id: string) {
     this.id = id;
+  }
+
+  // ── Broadcast / Timer ──────────────────────────────────────────────────────
+
+  setBroadcastFn(fn: () => void): void { this.broadcastFn = fn; }
+  private broadcast(): void { this.broadcastFn?.(); }
+
+  private clearTurnTimer(): void {
+    if (this.turnTimer) { clearTimeout(this.turnTimer); this.turnTimer = null; }
+  }
+
+  private startTurnTimer(playerId: string, delayMs: number, action: ClientAction): void {
+    this.clearTurnTimer();
+    this.turnTimer = setTimeout(() => {
+      this.turnTimer = null;
+      try { this.handleAction(playerId, action); this.broadcast(); } catch (_) {}
+    }, delayMs);
   }
 
   // ── Logging ────────────────────────────────────────────────────────────────
@@ -59,10 +81,24 @@ export class GameRoom {
   // ── Lobby ──────────────────────────────────────────────────────────────────
 
   addPlayer(socketId: string, name: string): void {
-    if (this.started) throw new Error('Game already started');
+    if (this.started) {
+      // Allow reconnection by name
+      const existing = this.players.find(p => p.name === name);
+      if (existing) {
+        const oldId = existing.id;
+        existing.id = socketId;
+        this.playerOrder = this.playerOrder.map(id => id === oldId ? socketId : id);
+        this.otherPlayersTurnQueue = this.otherPlayersTurnQueue.map(id => id === oldId ? socketId : id);
+        if (this.currentTurnPlayerId === oldId) this.currentTurnPlayerId = socketId;
+        this.log(`${name} reconnected.`, 'system');
+        return;
+      }
+      throw new Error('Game already started');
+    }
     if (this.players.length >= 5) throw new Error('Game is full');
     if (this.players.find(p => p.id === socketId)) throw new Error('Already in game');
-    this.players.push({ id: socketId, name, coins: 0, professions: [], expeditions: [] });
+    const color = PLAYER_COLORS[this.players.length % PLAYER_COLORS.length];
+    this.players.push({ id: socketId, name, coins: 0, professions: [], expeditions: [], color });
     this.playerOrder.push(socketId);
     this.log(`${name} joined the game.`, 'system');
   }
@@ -123,6 +159,7 @@ export class GameRoom {
     this.currentTurnPlayerId = this.activePlayer.id;
     this.log(`--- ${this.activePlayer.name}'s turn ---`, 'system');
     this.log(`${this.activePlayer.name} begins Phase 1: Discover.`, 'info');
+    this.startTurnTimer(this.activePlayer.id, 30000, { type: 'STOP_DRAWING' });
   }
 
   private beginTradeHirePhase(): void {
@@ -156,10 +193,19 @@ export class GameRoom {
     this.currentTurnPlayerId = activeP.id;
 
     this.log(`${activeP.name} begins Phase 2: Trade & Hire (may take ${this.cardsCanTake} card(s)).`, 'info');
+    this.startTurnTimer(activeP.id, 30000, { type: 'PASS_TURN' });
   }
 
   private beginOtherPlayersTurn(): void {
     if (this.harborDisplay.length === 0) {
+      for (const p of this.players) {
+        if (p.id === this.activePlayer.id) continue;
+        const jesters = p.professions.filter(pr => pr.profession === 'jester').length;
+        if (jesters > 0) {
+          p.coins += jesters;
+          this.log(`${p.name}'s Jester(s) trigger — gains ${jesters} coin(s) (empty harbor).`, 'action');
+        }
+      }
       this.endTurn();
       return;
     }
@@ -182,13 +228,36 @@ export class GameRoom {
     const nextId = this.otherPlayersTurnQueue.shift()!;
     const player = this.getPlayer(nextId);
     this.currentTurnPlayerId = nextId;
+
+    if (this.harborDisplay.length === 0) {
+      const jesters = player.professions.filter(p => p.profession === 'jester').length;
+      if (jesters > 0) {
+        player.coins += jesters;
+        this.log(`${player.name}'s Jester(s) trigger — gains ${jesters} coin(s) (empty harbor).`, 'action');
+      }
+      // Trigger remaining players in queue too then end
+      for (const id of this.otherPlayersTurnQueue) {
+        const p = this.getPlayer(id);
+        const j = p.professions.filter(pr => pr.profession === 'jester').length;
+        if (j > 0) {
+          p.coins += j;
+          this.log(`${p.name}'s Jester(s) trigger — gains ${j} coin(s) (empty harbor).`, 'action');
+        }
+      }
+      this.otherPlayersTurnQueue = [];
+      this.endTurn();
+      return;
+    }
+
     const governorCount = player.professions.filter(p => p.profession === 'governor').length;
     this.cardsCanTake = 1 + governorCount;
     this.cardsTaken = 0;
     this.log(`${player.name}'s turn to take a card from the harbor.`, 'info');
+    this.startTurnTimer(nextId, 30000, { type: 'PASS_TURN' });
   }
 
   private endTurn(): void {
+    this.clearTurnTimer();
     const discarded = this.harborDisplay.length;
     this.discard.push(...this.harborDisplay);
     this.harborDisplay = [];
@@ -221,6 +290,7 @@ export class GameRoom {
   // ── Action Dispatch ────────────────────────────────────────────────────────
 
   handleAction(socketId: string, action: ClientAction): void {
+    this.clearTurnTimer();
     if (this.gameOver) throw new Error('Game is over');
     switch (action.type) {
       case 'GUESS_NUMBER':     return this.actionGuessNumber(socketId, action.value);
@@ -293,6 +363,7 @@ export class GameRoom {
             this.log(`${p.name}'s Jester(s) trigger on bust — gains ${jesters} coin(s).`, 'action');
           }
         }
+        this.startTurnTimer(this.activePlayer.id, 2500, { type: 'PASS_TURN' });
         return;
       }
       this.lastDrawnShipId = card.id;
@@ -522,6 +593,7 @@ export class GameRoom {
           this.log(`${p.name}'s Jester(s) trigger on bust — gains ${jesters} coin(s).`, 'action');
         }
       }
+      this.startTurnTimer(player.id, 2500, { type: 'PASS_TURN' });
       return;
     }
 
@@ -601,6 +673,7 @@ export class GameRoom {
     return p.professions.reduce((s, c) => {
       if (c.profession === 'sailor') return s + 1;
       if (c.profession === 'pirate') return s + 2;
+      if (c.profession === 'cannoneer') return s + 3;
       return s;
     }, 0);
   }
@@ -676,6 +749,7 @@ export class GameRoom {
       cutlasses: this.computeCutlasses(p),
       professions: p.professions,
       expeditions: p.expeditions,
+      color: p.color,
     };
   }
 }

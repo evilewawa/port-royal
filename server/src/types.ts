@@ -3,7 +3,7 @@ export type ShipColor = 'yellow' | 'blue' | 'green' | 'red' | 'black';
 export type ProfessionType =
   | 'trader' | 'settler' | 'captain' | 'priest' | 'jack'
   | 'sailor' | 'pirate' | 'senorita' | 'jester' | 'admiral'
-  | 'governor' | 'gambler';
+  | 'governor' | 'gambler' | 'cannoneer';
 
 export interface ShipCard {
   id: string;
@@ -47,6 +47,7 @@ export interface ServerPlayer {
   coins: number;
   professions: ProfessionCard[];
   expeditions: ExpeditionCard[];
+  color: string;
 }
 
 // Client-visible player state
@@ -58,6 +59,7 @@ export interface ClientPlayer {
   cutlasses: number;
   professions: ProfessionCard[];
   expeditions: ExpeditionCard[];
+  color: string;
 }
 
 export type GamePhase = 'waiting' | 'number_guess' | 'discover' | 'trade_hire' | 'other_players_turn';

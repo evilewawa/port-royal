@@ -26,8 +26,8 @@ export default function PlayerDisplay({ player, isLocal, isActive, isCurrentTurn
       onMouseLeave={() => setHovered(false)}
     >
       <div className="player-display__header">
-        <span className="player-display__name">
-          {player.name}{isLocal ? ' (you)' : ''}
+        <span className="player-display__name" style={{ '--player-color': player.color } as React.CSSProperties}>
+          <span style={{ color: player.color }}>{player.name}</span>{isLocal ? ' (you)' : ''}
           {isCurrentTurn && <span className="player-display__turn-badge">TURN</span>}
           {!isLocal && hasCards && <span className="player-display__peek-hint"> ({player.professions.length + player.expeditions.length} cards)</span>}
         </span>

@@ -32,6 +32,7 @@ io.on('connection', socket => {
     try {
       const gameId = uuidv4().slice(0, 8).toUpperCase();
       const room = new GameRoom(gameId);
+      room.setBroadcastFn(() => broadcastRoom(room));
       room.addPlayer(socket.id, playerName);
       rooms.set(gameId, room);
       socketToGame.set(socket.id, gameId);

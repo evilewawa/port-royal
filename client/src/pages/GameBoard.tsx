@@ -103,7 +103,7 @@ export default function GameBoard() {
             <button className="game-board__info-btn" onClick={() => setShowCardInfo(true)} title="Card reference">?</button>
           </div>
 
-          <GameLog entries={gameState.log ?? []} />
+          <GameLog entries={gameState.log ?? []} players={gameState.players.map(p => ({ id: p.id, name: p.name, color: p.color }))} />
         </div>
       </div>
 

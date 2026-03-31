@@ -10,7 +10,7 @@ interface Props {
 
 const PROFESSION_ORDER = [
   'sailor', 'pirate', 'trader', 'senorita', 'jester',
-  'priest', 'settler', 'jack', 'captain', 'admiral', 'governor', 'gambler',
+  'priest', 'settler', 'jack', 'captain', 'admiral', 'governor', 'gambler', 'cannoneer',
 ];
 
 export default function CardEditor({ config, onChange }: Props) {

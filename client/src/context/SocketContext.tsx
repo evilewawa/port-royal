@@ -34,6 +34,11 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     socket.on('connect', () => {
       setConnected(true);
       setPlayerId(socket.id ?? null);
+      const savedGame = localStorage.getItem('pr-game');
+      const savedName = localStorage.getItem('pr-name');
+      if (savedGame && savedName) {
+        socket.emit('game:join', { gameId: savedGame, playerName: savedName });
+      }
     });
 
     socket.on('disconnect', () => {
@@ -43,6 +48,10 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     socket.on('game:state', (state: GameState) => {
       setGameState(state);
       setError(null);
+      // Persist game ID for reconnection
+      if (state.gameId) {
+        localStorage.setItem('pr-game', state.gameId);
+      }
     });
 
     socket.on('game:error', (msg: string) => {
